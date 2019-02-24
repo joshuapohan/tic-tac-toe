@@ -24,6 +24,16 @@ class GameBoard {
 		this.board = new int[size][size];
 	}
 
+	public void clearBoard(){
+		this.currentState = PLAYING;
+		this.currentPlayer = CROSS;
+		for(int i = 0; i < this.board.length; i++){
+			for(int j = 0; j < this.board[i].length; j++){
+				this.board[i][j] = EMPTY;
+			}
+		}
+	}
+
 	public boolean makeMove(int content, int row, int column){
 		if(row < this.board.length && column < this.board[row].length){
 			if(this.board[row][column] == EMPTY){
@@ -56,6 +66,22 @@ class GameBoard {
 			diagonalWin = true;
 			for(int i = 0; i < this.board.length; i++){
 				if(this.board[i][i] != content){
+					diagonalWin = false;
+					break;
+				}
+			}
+		}
+		if(diagonalWin){
+			return true;
+		}
+
+		//reverse diagonal
+		if((row + column) == this.board.length - 1){
+			diagonalWin = true;
+			for(int i = 0; i < this.board.length; i++){
+				int diagRow = i;
+				int diagCol = this.board.length - 1 - diagRow;
+				if(this.board[diagRow][diagCol] != content){
 					diagonalWin = false;
 					break;
 				}
@@ -104,6 +130,7 @@ class GameBoard {
 	}
 
 	public boolean playerTurn(int row, int column){
+		System.out.println("Player : " + this.getCurrentPlayer());
 		if(this.makeMove(this.getCurrentPlayer(), row, column)){
 			if(this.hasWon(this.getCurrentPlayer(), row, column)){
 				if(this.getCurrentPlayer() == NOUGHT){
@@ -112,12 +139,16 @@ class GameBoard {
 				else{
 					this.currentState = CROSS_WON;
 				}
+				System.out.println("Someone won");
 			}else if(this.isDraw()){
 				this.currentState = DRAW;
+				System.out.println("Draw");
 			}
 			else{
 				this.switchPlayer();
+				System.out.println("Player switched");
 			}
+			System.out.println("Player is now : " + this.getCurrentPlayer());
 			return true;
 		}
 		return false;
@@ -141,5 +172,6 @@ class GameBoard {
 				System.out.print("---------");
 			}
 		}
+		System.out.println();
 	}
 }

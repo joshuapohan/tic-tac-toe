@@ -3,18 +3,21 @@ package com.jpo.tictactoe;
 import java.util.List;
 import java.util.ArrayList;
 import static spark.Spark.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class App 
 {
 	public static List<GameBoard> GameRooms = new ArrayList();
+    public static Gson gson = new Gson();
+
 
     public static void main( String[] args )
     {
-
         post("/newroom/:size", (req,res)->{
         	int nextRoomId = GameRooms.size();
         	GameRooms.add(nextRoomId, new GameBoard(nextRoomId, Integer.parseInt(req.params(":size"))));
-        	return "Room " + nextRoomId + "created";
+        	return "Room " + nextRoomId + " created";
         });
 
         post("/room/:id", (req,res)->{
@@ -28,7 +31,8 @@ public class App
 	        	if(currentBoard != null){
 	        		currentBoard.playerTurn(row, col);
 	        		currentBoard.printBoard();
-	        		return "Joining room " + roomId;
+                    String boardJson = gson.toJson(currentBoard);
+	        		return boardJson;
 	        	} else{
 	        		return "Room not found";
 	        	}
@@ -41,7 +45,10 @@ public class App
         	GameBoard currentBoard = GameRooms.get(roomId);
         	if(currentBoard != null){
         		currentBoard.printBoard();
-        		return "Joining room " + roomId;
+                System.out.println("Status :");
+                System.out.println(currentBoard.getState());
+                String boardJson = gson.toJson(currentBoard);
+                return boardJson;
         	} else{
         		return "Room not found";
         	}
